@@ -4,6 +4,7 @@ const Message = require("../models/Message");
 
 const fetchMessages = async (req, res) => {
   try {
+    console.log("fetching messages");
     const { sender, receiver } = req.params;
 
     if (!sender || !receiver) {
@@ -21,7 +22,9 @@ const fetchMessages = async (req, res) => {
         { sender: sender, recipient: receiver },
         { sender: receiver, recipient: sender },
       ],
-    });
+    })
+      .populate("sender", "username")
+      .populate("recipient", "username");
     return res.status(200).json(messages);
   } catch (err) {
     return res.status(500).json({ message: err.message });

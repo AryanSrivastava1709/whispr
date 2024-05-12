@@ -44,7 +44,9 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email })
+      .select("+password")
+      .populate("friends", "username status");
     if (!user) {
       return res.status(400).json({ message: "Please register yourself" });
     }
@@ -56,8 +58,13 @@ const login = async (req, res) => {
     await user.save();
     const token = generateToken(user);
     return res.status(200).json({
-      username: user.username,
-      email: user.email,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        status: user.status,
+        friends: user.friends,
+      },
       token,
     });
   } catch (err) {
@@ -99,7 +106,10 @@ const searchUser = async (req, res) => {
         .status(200)
         .json({ message: "You are searching for yourself" });
     }
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).populate(
+      "friends",
+      "username "
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -125,7 +135,13 @@ const addFriend = async (req, res) => {
         .json({ message: "You cannot add yourself as a friend" });
     }
     const user = await User.findOne({ username: req.user.username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const friend = await User.findOne({ username: friendName });
+    if (!friend) {
+      return res.status(404).json({ message: "Friend not found" });
+    }
 
     if (user.friends.includes(friend._id)) {
       return res.status(400).json({ message: "User is already a friend" });
@@ -136,8 +152,13 @@ const addFriend = async (req, res) => {
 
     friend.friends.push(user._id);
     await friend.save();
-
-    return res.status(200).json({ message: "Friend added successfully" });
+    const userWithFriends = await User.findOne({
+      username: req.user.username,
+    }).populate("friends", "username status");
+    return res.status(200).json({
+      message: "Friend added successfully",
+      friend: userWithFriends.friends,
+    });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -153,9 +174,16 @@ const changeStatus = async (req, res) => {
       return res.status(401).json({ message: "You are not logged in" });
     }
     const user = await User.findOne({ username: req.user.username });
+    if (user.status === status) {
+      return res
+        .status(400)
+        .json({ message: "Status is already set to " + status });
+    }
     user.status = status;
     await user.save();
-    return res.status(200).json({ message: "Status updated successfully" });
+    return res
+      .status(200)
+      .json({ message: "Status updated successfully", staus: user.status });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
