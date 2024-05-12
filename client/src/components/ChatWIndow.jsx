@@ -5,7 +5,8 @@ import { userStore } from "../lib/userStore";
 function ChatWIndow() {
   const { sender, receiver, messages } = messageStore();
   const { user } = userStore();
-  return (
+  // renders only when user receiver and message is not empty
+  return user && receiver && messages ? (
     <div className="w-[75rem] bg-primary m-10  rounded-xl">
       <div className="text-black text-3xl font-bold flex flex-row m-10 items-center justify-between bg-white p-4 rounded-3xl shadow-lg shadow-black">
         <div className=" flex flex-row items-center space-x-6">
@@ -56,7 +57,7 @@ function ChatWIndow() {
         )}
       </div>
     </div>
-  );
+  ) : null;
 }
 
 export default ChatWIndow;

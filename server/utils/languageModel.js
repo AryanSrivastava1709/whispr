@@ -7,12 +7,17 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+//instance of the GoogleGenerativeAI class
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
+//function to generate text
 const generateText = async (msg) => {
+  //get the generative model
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+  //start a chat with the model
   const chat = model.startChat({
+    //settings for the chat
     safetySettings: [
       {
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -35,6 +40,8 @@ const generateText = async (msg) => {
         threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
       },
     ],
+
+    //history of the chat for the model to learn from
     history: [
       {
         role: "user",
@@ -53,10 +60,13 @@ const generateText = async (msg) => {
     },
   });
 
+  //send the message to the chat
   const result = await chat.sendMessage(msg);
   const response = await result.response;
   const text = response.text();
   console.log(text);
+
+  //return the response
   return text;
 };
 

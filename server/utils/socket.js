@@ -53,7 +53,7 @@ const socketHandler = (socket) => {
 
         await senderMessage.save();
         await llmResponseMessage.save();
-
+        console.log(socket.userId);
         socket.to(recepient).emit("receive-message", senderMessage);
         socket.to(socket.userId).emit("receive-message", llmResponseMessage);
       } else {
