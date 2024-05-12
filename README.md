@@ -19,7 +19,7 @@ This is a real-time chat application built with Node.js, Express, and Socket.IO.
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/chat-app.git
+git clone https://github.com/your-username/whispr.git
 ```
 
 2. Navigate to the project directory:
