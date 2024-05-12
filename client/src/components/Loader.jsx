@@ -2,6 +2,7 @@ import React from "react";
 import load from "./../assets/load.png";
 function Loader() {
   return (
+    // Loader component
     <>
       <div
         type="button"
