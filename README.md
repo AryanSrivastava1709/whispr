@@ -1,4 +1,4 @@
-# Chat Application
+# Whispr - Chat Application
 
 This is a real-time chat application built with Node.js, Express, and Socket.IO. It allows users to register, log in, search for other users, add friends, and send/receive messages in real-time.
 
